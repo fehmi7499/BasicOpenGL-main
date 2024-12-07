@@ -36,7 +36,7 @@ int main() {
             }
             
         }
-        if(stbi_write_png("res/textures/Grayscale.png", width, height, 1, grayscaleImg, width)) {
+        if(stbi_write_png("Grayscale.png", width, height, 1, grayscaleImg, width)) {
             std::cout << "Grayscale Image saved as Grayscale.png\n";
         
         } else{
@@ -48,7 +48,7 @@ int main() {
         unsigned char* img1 = stbi_load("../bin/Grayscale.png", &width, &height, &comps, 0);
         unsigned char* blurredImg = new unsigned char[width * height];
         applyGaussianBlur(img1, blurredImg, width, height);
-        if(stbi_write_png("res/textures/GaussianBlur.png", width, height, 1, blurredImg, width)){
+        if(stbi_write_png("GaussianBlur.png", width, height, 1, blurredImg, width)){
             std::cout << "GaussianBlur Image saved as GaussianBlur.png\n";
         
         } else{
@@ -72,44 +72,50 @@ int main() {
                 magnitude[idx] = static_cast<unsigned char>(std::min(255.0f, gradMag));
             }
         }
-        //------------------------------------------------------------- Non-Maximum Suppression ----------------------------------------------------------------
+        //------------------------------------------------------------- Non-Maximum Suppression -------------------------------------------------
         //Apply Non Maximum suppression
         unsigned char* nmsOutPut = new unsigned char[width * height];
         nonMaximumSuppression(magnitude, Gx, Gy, nmsOutPut, width, height);
 
         //save non maximum suppression output
-        if(stbi_write_png("res/textures/NonMaximumSuppression.png", width, height, 1, magnitude, width)){
+        if(stbi_write_png("NonMaximumSuppression.png", width, height, 1, magnitude, width)){
             std::cout << "NonMaximumSuppression Image saved as NonMaximumSuppression.png\n";
         
         } else{
             std::cerr << "Failed to save NonMaximumSuppression image\n";
         }
 
-        //--------------------------------------------------------------- Double thresholding --------------------------------------------------------------------
+        //--------------------------------------------------------------- Double thresholding -----------------------------------------------------
         unsigned char* edgeOutput = new unsigned char[width * height];
         doubleThreshold(nmsOutPut, edgeOutput, width, height, 50, 100);  // Low=50, High=100
         //Edge tracking by Hysteresis
         edgeTrackingByHysteresis(edgeOutput, width, height);
         //Save final edge-detected Image
-        if(stbi_write_png("res/textures/CannyEdgeDetection.png", width, height, 1, edgeOutput, width)){
+        if(stbi_write_png("CannyEdgeDetection.png", width, height, 1, edgeOutput, width)){
             std::cout << "Canny Edge Detection Image saved as CannyEdgeDetection.png\n";
         } else {
             std::cerr << "Failed to save Canny Edge Detecion image\n";
         }
 
-        //------------------------------------------------------------ Halftone ------------------------------------------------------------------------------------
+        std::cout << " CannyTEST\n";
+
+        //------------------------------------------------------------ Halftone ------------------------------------------------------------------
         unsigned char * halftoneBuffer = new unsigned char[width * height];
         halftone(grayscaleImg, halftoneBuffer, width, height);
-        if(stbi_write_png("res/textures/Halftone.png", width * 2, height * 2, 1, halftoneBuffer, width * 2)){
+        if(stbi_write_png("Halftone.png", width * 2, height * 2, 1, halftoneBuffer, width * 2)){
             std::cout << "Halftone Image saved as Halftone.png\n";
+            std::cout << " HalftoneSaveTEST\n";
         } else {
             std::cerr << "Failed to save Halftone image\n";
+            std::cout << " HalftoneFailTEST\n";
         }
+
+        std::cout << " HalftoneTEST\n";
 
         //------------------------------------------------------------ Floyed Svteinberg ---------------------------------------------------------------------------
         unsigned char * floyedSteinbergBuffer = new unsigned char [width * height];
         floyedSteinberg(grayscaleImg, floyedSteinbergBuffer, width, height);
-        if(stbi_write_png("res/textures/FloyedSteinberg.png", width, height, 1, floyedSteinbergBuffer, width * 2)){
+        if(stbi_write_png("FloyedSteinberg.png", width, height, 1, floyedSteinbergBuffer, width * 2)){
             std::cout << "FloyedSteinberg Image saved as FloyedSteinberg.png\n";
         } else {
             std::cerr << "Failed to save FloyedSteinberg image\n";
