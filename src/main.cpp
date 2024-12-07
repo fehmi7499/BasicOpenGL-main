@@ -97,25 +97,19 @@ int main() {
             std::cerr << "Failed to save Canny Edge Detecion image\n";
         }
 
-        std::cout << " CannyTEST\n";
-
         //------------------------------------------------------------ Halftone ------------------------------------------------------------------
-        unsigned char * halftoneBuffer = new unsigned char[width * height];
-        halftone(grayscaleImg, halftoneBuffer, width, height);
-        if(stbi_write_png("Halftone.png", width * 2, height * 2, 1, halftoneBuffer, width * 2)){
+        unsigned char * halftoneImg = new unsigned char[width * height * 4];
+        halftone(img1, halftoneImg, width, height);
+        if(stbi_write_png("Halftone.png", width * 2, height * 2, 1, halftoneImg, width * 2)){
             std::cout << "Halftone Image saved as Halftone.png\n";
-            std::cout << " HalftoneSaveTEST\n";
         } else {
             std::cerr << "Failed to save Halftone image\n";
-            std::cout << " HalftoneFailTEST\n";
         }
 
-        std::cout << " HalftoneTEST\n";
-
         //------------------------------------------------------------ Floyed Svteinberg ---------------------------------------------------------------------------
-        unsigned char * floyedSteinbergBuffer = new unsigned char [width * height];
-        floyedSteinberg(grayscaleImg, floyedSteinbergBuffer, width, height);
-        if(stbi_write_png("FloyedSteinberg.png", width, height, 1, floyedSteinbergBuffer, width * 2)){
+        unsigned char * floyedSteinbergImg = new unsigned char [width * height];
+        floyedSteinberg(img1, floyedSteinbergImg, width, height);
+        if(stbi_write_png("FloyedSteinberg.png", width, height, 1, floyedSteinbergImg, width)){
             std::cout << "FloyedSteinberg Image saved as FloyedSteinberg.png\n";
         } else {
             std::cerr << "Failed to save FloyedSteinberg image\n";
@@ -128,8 +122,8 @@ int main() {
         delete[] magnitude;
         delete[] nmsOutPut;
         delete[] edgeOutput;
-        delete[] halftoneBuffer;
-        delete[] floyedSteinbergBuffer;
+        delete[] halftoneImg;
+        delete[] floyedSteinbergImg;
         stbi_image_free(img);
         stbi_image_free(img1);
         stbi_image_free(img2);
