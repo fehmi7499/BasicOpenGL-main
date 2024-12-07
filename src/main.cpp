@@ -41,7 +41,7 @@ int main() {
             std::cerr << "Failed to save Grayscale image\n";
         }
 
-        //---------------------------------------------------------- GaussianBlur ---------------------------------------------------
+        //---------------------------------------------------------- GaussianBlur ----------------------------------------------------------------------------
         // buffer for GaussianBlur image
         unsigned char* img1 = stbi_load("../bin/Grayscale.png", &width, &height, &comps, 0);
         unsigned char* blurredImg = new unsigned char[width * height];
@@ -52,7 +52,7 @@ int main() {
         } else{
             std::cerr << "Failed to save GaussianBlur image\n";
         }
-        //---------------------------------------------------------- sobel filter -----------------------------------------------------
+        //---------------------------------------------------------- Gradient Calculation -> sobel filter -----------------------------------------------------
         // buffers for sobel gradients
         unsigned char* img2 = stbi_load("../bin/GaussianBlur.png", &width, &height, &comps, 0);
         float* Gx = new float[width * height];
@@ -70,7 +70,7 @@ int main() {
                 magnitude[idx] = static_cast<unsigned char>(std::min(255.0f, gradMag));
             }
         }
-
+        //------------------------------------------------------------- Non-Maximum Suppression ----------------------------------------------------------------
         //Apply Non Maximum suppression
         unsigned char* nmsOutPut = new unsigned char[width * height];
         nonMaximumSuppression(magnitude, Gx, Gy, nmsOutPut, width, height);
@@ -83,6 +83,17 @@ int main() {
             std::cerr << "Failed to save NonMaximumSuppression image\n";
         }
 
+        //--------------------------------------------------------------- Double thresholding --------------------------------------------------------------------
+        unsigned char* edgeOutput = new unsigned char[width * height];
+        doubleThreshold(nmsOutPut, edgeOutput, width, height, 50, 100);  // Low=50, High=100
+        //Edge tracking by Hysteresis
+        edgeTrackingByHysteresis(edgeOutput, width, height);
+        //Save final edge-detected Image
+        if(stbi_write_png("CannyEdgeDetection.png", width, height, 1, edgeOutput, width)){
+            std::cout << "Canny Edge Detection Image saved as CannyEdgeDetection.png\n";
+        } else {
+            std::cerr << "Failed to save Canny Edge Detecion image\n";
+        }
 
         delete[] grayscaleImg;
         delete[] blurredImg;
@@ -90,12 +101,15 @@ int main() {
         delete[] Gy;
         delete[] magnitude;
         delete[] nmsOutPut;
+        delete[] edgeOutput;
         stbi_image_free(img);
         stbi_image_free(img1);
         stbi_image_free(img2);
     } else {
         std::cerr << "Failed to load image\n";
     }
+
+
     return 0;
     
 }

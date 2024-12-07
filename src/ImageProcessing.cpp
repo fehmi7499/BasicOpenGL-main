@@ -12,13 +12,13 @@ void applyGaussianBlur(unsigned char* src, unsigned char* dst, int width, int he
         {0.0126, 0.0252, 0.0314, 0.0252, 0.0126}
     };
 
-    float sum1 = 0.0f;
-    for(int i = 0; i< 5; i++){
-        for(int j = 0; j< 5; j++){
-            sum1 += gaussianKernel[i][j];
-        }
-    }
-    std::cout << "Gaussian Kernel Sum: " << sum1 << "\n" << std::endl;
+    // float sum1 = 0.0f;
+    // for(int i = 0; i< 5; i++){
+    //     for(int j = 0; j< 5; j++){
+    //         sum1 += gaussianKernel[i][j];
+    //     }
+    // }
+    // std::cout << "Gaussian Kernel Sum: " << sum1 << "\n" << std::endl;
 
     // the first and second for() starts at index 2 are to avoid 
     // accessing out of bounds pixels at the edges of the image
@@ -105,6 +105,40 @@ void nonMaximumSuppression(unsigned char* magnitude, float* Gx, float* Gy, unsig
             }
              
 
+        }
+    }
+}
+
+
+void doubleThreshold(unsigned char* nmsOutput,  unsigned char* edgeOutput, int width, int height, int lowThreshold, int highThreshold){
+    for (int y = 0; y < height; y++){
+        for (int x = 0; x < width; x++){
+            int index = y * width + x;
+            if (nmsOutput[index] >= highThreshold){
+                edgeOutput[index] = 255;    // Strong edge
+            } else if (nmsOutput[index] >= lowThreshold){
+                edgeOutput[index] = 128;    // weak edge
+            } else {
+                edgeOutput[index] = 0;
+            }
+        }
+    }
+}
+
+void edgeTrackingByHysteresis(unsigned char* edgeOutput, int width, int height){
+    for (int y = 0; y < height; y++){
+        for (int x = 0; x < width; x++){
+            int index = y * width + x;
+            if (edgeOutput[index] == 128){  // Weak edge
+                // checking if there is a connection to strong edge
+                if (edgeOutput[index - width - 1] == 255 || edgeOutput[index - width] == 255 || 
+                    edgeOutput[index - width + 1] == 255 || edgeOutput[index - 1] == 255 || edgeOutput[index + 1] == 255 ||
+                    edgeOutput[index + width - 1] == 255 || edgeOutput[index + width] == 255 || edgeOutput[index + width + 1] == 255){
+                    edgeOutput[index] == 255;  // promote the weak edge to strong edge
+                } else {
+                    edgeOutput[index] = 0;  // suppress weak edge
+                }
+            }
         }
     }
 }
